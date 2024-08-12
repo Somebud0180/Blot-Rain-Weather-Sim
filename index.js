@@ -157,10 +157,9 @@ if (rainRand == false) {
 
 // Main Generation
 let finalLines = [];
-let cutLines = [];
-const raindrops = [];
-let rainOne = [];
-let rainTwo = [];
+let raindrops = [];
+let currentDrop = [];
+let lastDrop = [];
 
 for (let i = 0; i < rainFinalSet; i++) {
   // Raindrop shape variables
@@ -181,18 +180,15 @@ for (let i = 0; i < rainFinalSet; i++) {
     [center, tip]
   ]);
 
-  // raindrops.push(raindrop);
-  // console.log(raindrop)
-  //console.log(raindrops[0])
-  if (i > 0 ) {
-    rainTwo.push(raindrop);
-    bt.cover(rainOne, rainTwo);
+  if (i > 0) {
+    // bt.difference(raindrop, lastDrop);
+    finalLines.push(raindrop);
+    lastDrop = bt.copy(raindrop);
   } else if (i == 0) {
-    rainOne.push(raindrop);
+    // Copying the contents of raindrop to rainOne
+    lastDrop = bt.copy(raindrop);
+    finalLines.push(raindrop);
   }
-  
-  finalLines.push(raindrops[i]);
 }
 
-finalLines.push(raindrops);
 drawLines(finalLines, { stroke: rainColor, width: 2 });

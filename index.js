@@ -13,9 +13,9 @@ setDocDimensions(width, height);
 
 // Settings
 let rainColor = "blue" // I like either gray or blue
-let rainMaxLength = 15 // Adjust max length of the raindrops
-let rainRand = false // "false" for manual (rainIntensity) / "true" for random with rainIntensity as max
-let rainIntensity = 5 // 1:1 Raindrop, Higher has more chance to clump or freeze, I suggest < 6
+let rainMaxLength = 14 // Adjust max length of the raindrops
+let rainRand = true // "false" for manual (rainIntensity) / "true" for random with rainIntensity as max
+let rainIntensity = 6 // 1:1 Raindrop, Higher has more chance to clump or freeze, I suggest 6 or lower
 
 // Cloud Creation
 let cloud = [
@@ -27,18 +27,28 @@ let cloud = [
   new bt.Turtle(), // 5 
 ];
 let cloudList = [];
+let baseOneFound = false;
 let baseTwoFound = false;
 let baseThreeFound = false;
 
-// Base Cloud Randoms
-let cloudOneBase = bt.randInRange(10, 60);
+let cloudOneBase;
 let cloudTwoBase;
 let cloudThreeBase;
+
+// Base Cloud Randoms
+while (!baseOneFound) {
+  cloudOneBase = bt.randInRange(10, 60);
+  let distanceToCenter = Math.abs(cloudOneBase - (width / 4));
+  let closeToCenter = distanceToCenter < 12;
+  if (!closeToCenter) {
+    baseOneFound = true;
+  }
+}
 
 while (!baseTwoFound) {
   cloudTwoBase = bt.randInRange(10, 60);
   let cloudXDifference = Math.abs(cloudOneBase - cloudTwoBase);
-  if (cloudXDifference >= 10) {
+  if (cloudXDifference >= 12) {
     baseTwoFound = true;
   }
 }
@@ -47,7 +57,10 @@ while (!baseThreeFound) {
   cloudThreeBase = bt.randInRange(10, 60);
   let cloudOneXDifference = Math.abs(cloudOneBase - cloudThreeBase);
   let cloudTwoXDifference = Math.abs(cloudTwoBase - cloudThreeBase);
-  if (cloudOneXDifference >= 10 && cloudTwoXDifference >= 10) {
+  
+  let distancedToOne = cloudOneXDifference >= 4 && cloudTwoXDifference >= 10;
+  let distancedToTwo = cloudOneXDifference >= 10 && cloudTwoXDifference >= 4;
+  if (distancedToOne || distancedToTwo) {
     baseThreeFound = true;
   }
 }
@@ -87,7 +100,7 @@ const cloudTwoLines = cloud[2].lines();
 
 // cloudThree
 cloud[3].up();
-cloud[3].goTo([cloudThreeBase, 95]);
+cloud[3].goTo([cloudThreeBase, 96]);
 cloud[3].down();
 cloud[3].forward(52.9);
 cloud[3].arc(103, 8);
@@ -105,7 +118,7 @@ const cloudThreeLines = cloud[3].lines();
 
 // cloudFour
 cloud[4].up();
-cloud[4].goTo([cloudThreeBase, 90]);
+cloud[4].goTo([cloudThreeBase, 92]);
 cloud[4].down();
 cloud[4].forward(49.2);
 cloud[4].arc(180, 6);
@@ -121,7 +134,7 @@ const cloudFourLines = cloud[4].lines();
 
 // cloudFive
 cloud[5].up();
-cloud[5].goTo([cloudThreeBase, 93]);
+cloud[5].goTo([cloudThreeBase, 95]);
 cloud[5].down();
 cloud[5].forward(44.1);
 cloud[5].arc(233, 9);
@@ -167,7 +180,7 @@ if (cloudRandom == 0) {
 }
 
 // Rain Generation
-let runTimes = 0; // How many times the generation has been run
+let runTimes = 0; // How many times the generation has been ran
 let rainFinalSet; // Rain Amount
 if (rainRand == false) {
   rainFinalSet = rainIntensity
@@ -180,12 +193,13 @@ let maxCloud = Math.max(...cloudList) + 43; // Find the rightest cloud plus clou
 let finalLines = [];
 let dropBases = [];
 let dropTips = [];
+let dropLeftSides = [];
+let dropRightSides = [];
 
 // Main Generation
 for (let i = 0; i < rainFinalSet; i++) {
   // Raindrop shape variables
-  runTimes++; // Count up amount
-  console.log(runTimes);
+  runTimes++;
   let base = bt.randInRange(10, 58);
   let tip = base + bt.randInRange(10, rainMaxLength);
   let maxWidth = rainMaxLength / 3;
@@ -207,9 +221,16 @@ for (let i = 0; i < rainFinalSet; i++) {
 
   for (let j = 0; j < finalLines.length; j++) {
     let dropBaseDistance = Math.abs(base - dropBases[j]);
-    let dropBaseTipDistance = Math.abs(base - dropTips[j]);
+    let dropBaseTipDistance = Math.abs(dropTips[j] - base);
+    let sideRightSideLeftDistance = Math.abs(dropRightSides[j] - leftSide);
 
-    if (bt.cut([raindrop], [finalLines[j]]) != 0 || dropBaseDistance < 5 || dropBaseTipDistance < 5) {
+    // Statements
+    let isClipping = bt.cut([raindrop], [finalLines[j]]) != 0;
+    let isBottomClose = dropBaseDistance < 5;
+    let isTopClose = dropBaseTipDistance < 5;
+    let isSideClose = sideRightSideLeftDistance < 2;
+
+    if (isClipping || isBottomClose || isTopClose || isSideClose) {
       canAddRaindrop = false;
       break;
     }
@@ -218,10 +239,14 @@ for (let i = 0; i < rainFinalSet; i++) {
   if (canAddRaindrop) {
     finalLines.push(raindrop);
     dropBases.push(base);
-    dropTips.push(tip);
+    dropTips.push(base + tip);
+    dropRightSides.push(rightSide)
   } else if (runTimes > rainIntensity * 3)  {
     // If it's been running for too long
     finalLines = []; // Reset final lines
+    dropBases = []; // Reset raindrop bases
+    dropTips = []; // Reset raindrop tips
+    dropRightSides = []; // Reset raindrop right sides
     runTimes = 0; // Reset times ran
     i = 0; // Reset loop amount
     continue; // Start over

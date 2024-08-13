@@ -14,8 +14,8 @@ setDocDimensions(width, height);
 // Settings
 let rainColor = "blue" // I like either gray or blue
 let rainMaxLength = 15 // Adjust max length of the raindrops
-let rainRand = true // "false" for manual (rainIntensity) / "true" for random with rainIntensity as max
-let rainIntensity = 8 // 1:1 Raindrop, Higher intensity has more chance to clump, I suggest < 6
+let rainRand = false // "false" for manual (rainIntensity) / "true" for random with rainIntensity as max
+let rainIntensity = 5 // 1:1 Raindrop, Higher has more chance to clump or freeze, I suggest < 6
 
 // Cloud Creation
 let cloud = [
@@ -167,6 +167,7 @@ if (cloudRandom == 0) {
 }
 
 // Rain Generation
+let runTimes; // How many times the generation has been run
 let rainFinalSet; // Rain Amount
 if (rainRand == false) {
   rainFinalSet = rainIntensity
@@ -177,10 +178,13 @@ if (rainRand == false) {
 let minCloud = Math.min(...cloudList); // Find the leftest cloud
 let maxCloud = Math.max(...cloudList) + 43; // Find the rightest cloud plus cloud length
 let finalLines = [];
+let dropBases = [];
+let dropTips = [];
 
 // Main Generation
 for (let i = 0; i < rainFinalSet; i++) {
   // Raindrop shape variables
+  runTimes++; // Count up amount
   let base = bt.randInRange(10, 58);
   let tip = base + bt.randInRange(10, rainMaxLength);
   let maxWidth = rainMaxLength / 3;
@@ -199,9 +203,12 @@ for (let i = 0; i < rainFinalSet; i++) {
 
   // Check against all polylines in finalLines
   let canAddRaindrop = true;
-  
+
   for (let j = 0; j < finalLines.length; j++) {
-    if (bt.cut([raindrop], [finalLines[j]]) != 0) {
+    let dropBaseDistance = Math.abs(base - dropBases[j]);
+    let dropBaseTipDistance = Math.abs(base - dropTips[j]);
+
+    if (bt.cut([raindrop], [finalLines[j]]) != 0 || dropBaseDistance < 5 || dropBaseTipDistance < 5) {
       canAddRaindrop = false;
       break;
     }
@@ -209,10 +216,18 @@ for (let i = 0; i < rainFinalSet; i++) {
 
   if (canAddRaindrop) {
     finalLines.push(raindrop);
+    dropBases.push(base);
+    dropTips.push(tip);
+  } else if (runTimes > rainIntensity * 5)  {
+    // If it's been running for too long
+    finalLines = []; // Reset final lines
+    runTimes = 0 // Reset times ran
+    i = 0; // Reset loop amount
+    continue; // Start over
   } else {
     // If the condition is true, restart the loop
     i--; // Allows the code to repeat without moving up
-    continue;
+    continue; // Repeat
   }
 }
 

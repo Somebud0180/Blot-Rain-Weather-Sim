@@ -167,7 +167,7 @@ if (cloudRandom == 0) {
 }
 
 // Rain Generation
-let runTimes; // How many times the generation has been run
+let runTimes = 0; // How many times the generation has been run
 let rainFinalSet; // Rain Amount
 if (rainRand == false) {
   rainFinalSet = rainIntensity
@@ -185,6 +185,7 @@ let dropTips = [];
 for (let i = 0; i < rainFinalSet; i++) {
   // Raindrop shape variables
   runTimes++; // Count up amount
+  console.log(runTimes);
   let base = bt.randInRange(10, 58);
   let tip = base + bt.randInRange(10, rainMaxLength);
   let maxWidth = rainMaxLength / 3;
@@ -218,10 +219,10 @@ for (let i = 0; i < rainFinalSet; i++) {
     finalLines.push(raindrop);
     dropBases.push(base);
     dropTips.push(tip);
-  } else if (runTimes > rainIntensity * 5)  {
+  } else if (runTimes > rainIntensity * 3)  {
     // If it's been running for too long
     finalLines = []; // Reset final lines
-    runTimes = 0 // Reset times ran
+    runTimes = 0; // Reset times ran
     i = 0; // Reset loop amount
     continue; // Start over
   } else {

@@ -14,8 +14,8 @@ setDocDimensions(width, height);
 // Settings
 let rainColor = "blue" // I like either gray or blue
 let rainMaxLength = 15 // Adjust max length of the raindrops
-let rainRand = false // "false" for manual (rainIntensity) / "true" for random with rainIntensity as max
-let rainIntensity = 6 // 1:1 Raindrop, Higher intensity has more chance to clump, I suggest < 6
+let rainRand = true // "false" for manual (rainIntensity) / "true" for random with rainIntensity as max
+let rainIntensity = 8 // 1:1 Raindrop, Higher intensity has more chance to clump, I suggest < 6
 
 // Cloud Creation
 let cloud = [
@@ -38,7 +38,6 @@ let cloudThreeBase;
 while (!baseTwoFound) {
   cloudTwoBase = bt.randInRange(10, 60);
   let cloudXDifference = Math.abs(cloudOneBase - cloudTwoBase);
-  console.log(cloudXDifference);
   if (cloudXDifference >= 10) {
     baseTwoFound = true;
   }
@@ -172,20 +171,14 @@ let rainFinalSet; // Rain Amount
 if (rainRand == false) {
   rainFinalSet = rainIntensity
 } else if (rainRand == true) {
-  rainFinalSet = bt.randIntInRange(1, rainIntensity)
+  rainFinalSet = bt.randIntInRange(2, rainIntensity)
 };
 
-// Main Generation
+let minCloud = Math.min(...cloudList); // Find the leftest cloud
+let maxCloud = Math.max(...cloudList) + 43; // Find the rightest cloud plus cloud length
 let finalLines = [];
-let raindrops = [];
-let currentDrop = [];
-let lastDrop = [];
 
-// Find the leftest cloud
-let minCloud = Math.min(...cloudList);
-// Find the rightest cloud
-let maxCloud = Math.max(...cloudList) + 43; // Highest cloud base plus lowest cloud length
-
+// Main Generation
 for (let i = 0; i < rainFinalSet; i++) {
   // Raindrop shape variables
   let base = bt.randInRange(10, 58);
@@ -195,7 +188,6 @@ for (let i = 0; i < rainFinalSet; i++) {
   let rightSide = leftSide + bt.randInRange(3, maxWidth);
   let sidesDifference = (rightSide - leftSide) / 2;
   let center = sidesDifference + leftSide;
-  let covered;
 
   //Raindrop Shaping
   const raindrop = bt.catmullRom([

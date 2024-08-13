@@ -12,10 +12,10 @@ const midpoint = ([x1, y1], [x2, y2]) => [(x1 + x2) / 2, (y1 + y2) / 2];
 setDocDimensions(width, height);
 
 // Settings
-let rainColor = "gray" // I like either gray or blue
+let rainColor = "blue" // I like either gray or blue
 let rainMaxLength = 15 // Adjust max length of the raindrops
 let rainRand = false // "false" for manual (rainIntensity) / "true" for random with rainIntensity as max
-let rainIntensity = 2 // 1:1 Raindrop, Higher intensity has more chance to overlap, I suggest < 6
+let rainIntensity = 6 // 1:1 Raindrop, Higher intensity has more chance to clump, I suggest < 6
 
 // Cloud Creation
 let cloud = [
@@ -180,14 +180,22 @@ for (let i = 0; i < rainFinalSet; i++) {
     [center, tip]
   ]);
 
-  if (i > 0) {
-    // bt.difference(raindrop, lastDrop);
+  // Check against all polylines in finalLines
+  let canAddRaindrop = true;
+  
+  for (let j = 0; j < finalLines.length; j++) {
+    if (bt.cut([raindrop], [finalLines[j]]) != 0) {
+      canAddRaindrop = false;
+      break;
+    }
+  }
+
+  if (canAddRaindrop) {
     finalLines.push(raindrop);
-    lastDrop = bt.copy(raindrop);
-  } else if (i == 0) {
-    // Copying the contents of raindrop to rainOne
-    lastDrop = bt.copy(raindrop);
-    finalLines.push(raindrop);
+  } else {
+    // If the condition is true, restart the loop
+    i--; // Allows the code to repeat without moving up
+    continue;
   }
 }
 

@@ -28,29 +28,34 @@ let cloud = [
 ];
 let cloudList = [];
 let baseTwoFound = false;
+let baseThreeFound = false;
 
 // Base Cloud Randoms
-let cloudOneBaseX = bt.randInRange(10, 60);
-let cloudTwoBaseX;
+let cloudOneBase = bt.randInRange(10, 60);
+let cloudTwoBase;
+let cloudThreeBase;
 
 while (!baseTwoFound) {
-  cloudTwoBaseX = bt.randInRange(10, 60);
-  let cloudXDifference = Math.abs(cloudOneBaseX - cloudTwoBaseX);
+  cloudTwoBase = bt.randInRange(10, 60);
+  let cloudXDifference = Math.abs(cloudOneBase - cloudTwoBase);
   console.log(cloudXDifference);
   if (cloudXDifference >= 10) {
     baseTwoFound = true;
   }
 }
 
-
-let cloudThreeBaseX = bt.randInRange(10, 60);
-let cloudFourBaseX = bt.randInRange(10, 60);
-let cloudFiveBaseX = bt.randInRange(10, 60);
+while (!baseThreeFound) {
+  cloudThreeBase = bt.randInRange(10, 60);
+  let cloudOneXDifference = Math.abs(cloudOneBase - cloudThreeBase);
+  let cloudTwoXDifference = Math.abs(cloudTwoBase - cloudThreeBase);
+  if (cloudOneXDifference >= 10 && cloudTwoXDifference >= 10) {
+    baseThreeFound = true;
+  }
+}
 
 // cloudOne
-const cloudOneBase = [cloudOneBaseX, 75];
 cloud[1].up();
-cloud[1].goTo(cloudOneBase);
+cloud[1].goTo([cloudOneBase, 76]);
 cloud[1].down();
 cloud[1].forward(47.54);
 cloud[1].arc(103, 7);
@@ -68,9 +73,8 @@ cloud[1].arc(106, 7);
 const cloudOneLines = cloud[1].lines();
 
 // cloudTwo
-const cloudTwoBase = [cloudTwoBaseX, 85];
 cloud[2].up();
-cloud[2].goTo(cloudTwoBase);
+cloud[2].goTo([cloudTwoBase, 80]);
 cloud[2].down();
 cloud[2].forward(53.7);
 cloud[2].arc(190, 8);
@@ -83,9 +87,8 @@ cloud[2].arc(169, 12);
 const cloudTwoLines = cloud[2].lines();
 
 // cloudThree
-const cloudThreeBase = [cloudThreeBaseX, 96];
 cloud[3].up();
-cloud[3].goTo(cloudThreeBase);
+cloud[3].goTo([cloudThreeBase, 95]);
 cloud[3].down();
 cloud[3].forward(52.9);
 cloud[3].arc(103, 8);
@@ -102,9 +105,8 @@ cloud[3].arc(133.5, 13);
 const cloudThreeLines = cloud[3].lines();
 
 // cloudFour
-const cloudFourBase = [cloudFourBaseX, 95];
 cloud[4].up();
-cloud[4].goTo(cloudThreeBase);
+cloud[4].goTo([cloudThreeBase, 90]);
 cloud[4].down();
 cloud[4].forward(49.2);
 cloud[4].arc(180, 6);
@@ -119,9 +121,8 @@ cloud[4].arc(160, 7);
 const cloudFourLines = cloud[4].lines();
 
 // cloudFive
-const cloudFiveBase = [cloudFiveBaseX, 93];
 cloud[5].up();
-cloud[5].goTo(cloudThreeBase);
+cloud[5].goTo([cloudThreeBase, 93]);
 cloud[5].down();
 cloud[5].forward(44.1);
 cloud[5].arc(233, 9);
@@ -136,12 +137,12 @@ const cloudFiveLines = cloud[5].lines();
 // Draw Clouds
 let cloudRandom = bt.randIntInRange(0, 3)
 if (cloudRandom == 0) {
-  cloudList.push(cloudOneBaseX, cloudTwoBaseX)
+  cloudList.push(cloudOneBase, cloudTwoBase)
   bt.cover(cloudTwoLines, cloudOneLines);
   drawLines(cloudOneLines, { stroke: "gray", width: 4 })
   drawLines(cloudTwoLines, { stroke: "gray", width: 4 })
 } else if (cloudRandom == 1) {
-  cloudList.push(cloudOneBaseX, cloudTwoBaseX, cloudThreeBaseX)
+  cloudList.push(cloudOneBase, cloudTwoBase, cloudThreeBase)
   bt.cover(cloudThreeLines, cloudTwoLines);
   bt.cover(cloudThreeLines, cloudOneLines);
   bt.cover(cloudTwoLines, cloudOneLines);
@@ -149,7 +150,7 @@ if (cloudRandom == 0) {
   drawLines(cloudTwoLines, { stroke: "gray", width: 4 })
   drawLines(cloudThreeLines, { stroke: "gray", width: 4 })
 } else if (cloudRandom == 2) {
-  cloudList.push(cloudOneBaseX, cloudTwoBaseX, cloudFourBaseX)
+  cloudList.push(cloudOneBase, cloudTwoBase, cloudThreeBase)
   bt.cover(cloudFourLines, cloudTwoLines);
   bt.cover(cloudFourLines, cloudOneLines);
   bt.cover(cloudTwoLines, cloudOneLines);
@@ -157,7 +158,7 @@ if (cloudRandom == 0) {
   drawLines(cloudTwoLines, { stroke: "gray", width: 4 })
   drawLines(cloudFourLines, { stroke: "gray", width: 4 })
 } else if (cloudRandom == 3) {
-  cloudList.push(cloudOneBaseX, cloudTwoBaseX, cloudFiveBaseX)
+  cloudList.push(cloudOneBase, cloudTwoBase, cloudThreeBase)
   bt.cover(cloudFiveLines, cloudTwoLines);
   bt.cover(cloudFiveLines, cloudOneLines);
   bt.cover(cloudTwoLines, cloudOneLines);
